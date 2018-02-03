@@ -15,7 +15,8 @@ case class Network(
                     version: String,
                     broadCastMax: Int,
                     peerSeed: List[String],
-                    peers: List[Peer])
+                    peers: List[Peer],
+                    peerListProviders: List[String])
 
 object Network{
   def apply(net: NetworkType): Network = {
@@ -28,7 +29,8 @@ object Network{
           0x17,
           "1.0.1",
           10,
-          List("5.39.9.240:4001",
+          List(
+            "5.39.9.240:4001",
             "5.39.9.241:4001",
             "5.39.9.242:4001",
             "5.39.9.243:4001",
@@ -44,7 +46,10 @@ object Network{
             "5.39.9.253:4001",
             "5.39.9.254:4001",
             "5.39.9.255:4001"),
-          List())
+          List(),
+          List(
+            "https://node1.arknet.cloud",
+            "https://node2.arknet.cloud"))
       }
       case DevNet =>{
         new Network(
@@ -54,9 +59,11 @@ object Network{
           0x1e,
           "1.0.1",
           10,
-          List("167.114.29.52:4002",
+          List(
+            "167.114.29.52:4002",
             "167.114.29.53:4002",
             "167.114.29.55:4002"),
+          List(),
           List())
       }
     }

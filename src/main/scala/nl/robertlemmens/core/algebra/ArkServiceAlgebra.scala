@@ -1,13 +1,15 @@
 package nl.robertlemmens.core.algebra
 
-import nl.robertlemmens.core.models.{Account, Delegate, Peer, Transaction}
+import nl.robertlemmens.core.models._
 
 /**
   * Created by Robert Lemmens on 1-2-18.
   */
 trait ArkServiceAlgebra[F[_]] {
 
-  def getPeerStatus(peer: Peer): F[String]
+  def warmup(network: Network, numberOfPeers: Int = 20): F[Network]
+
+  def getPeerStatus(nethash: String, peer: Peer): F[PeerStatus]
 
   def getPeerList(): F[List[Peer]]
 
@@ -17,4 +19,7 @@ trait ArkServiceAlgebra[F[_]] {
 
   def postTransaction(transaction: Transaction): F[Transaction]
 
+  def getFreshpeers(network: Network, numberOfPeers: Int): F[List[Peer]]
+
+  def getPeersFromSeedList(network: Network, numberOfPeers: Int): F[List[Peer]]
 }

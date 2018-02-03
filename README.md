@@ -1,5 +1,5 @@
 # ark-scala
-:coffee: Ark library in pure scala. 
+:coffee: An Ark library in pure scala. 
 
 The goal of this project is to bring Scala to the Ark Ecosystem. Scala introduces type-safety, immutability and functional programming without sacrificing the benefits of a more object-oriented language.
 
