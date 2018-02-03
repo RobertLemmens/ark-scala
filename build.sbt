@@ -18,8 +18,7 @@ libraryDependencies ++= Seq(
   "io.circe" %% "circe-literal" % "0.9.1",
   "org.scorexfoundation" %% "scrypto" % scryptoVersion,
   "com.madgag.spongycastle" % "core" % "1.56.0.0",
-  "org.bitcoinj" % "bitcoinj-core" % "0.14.5"
+  "org.bitcoinj" % "bitcoinj-core" % "0.14.5",
+  "org.scalactic" %% "scalactic" % "3.0.4",
+  "org.scalatest" %% "scalatest" % "3.0.4" % "test"
 )
-
-libraryDependencies += "org.scalactic" %% "scalactic" % "3.0.4"
-libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.4" % "test"
