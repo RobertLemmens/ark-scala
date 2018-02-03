@@ -1,7 +1,11 @@
 package nl.robertlemmens.core.models
 
+import java.util.NoSuchElementException
+
+import scala.util.Random
+
 /**
-  * Created by Robert Lemmens on 1-2-18.
+  * Created by Robert Lemmens
   */
 sealed trait NetworkType
 case object MainNet extends NetworkType
@@ -18,7 +22,19 @@ case class Network(
                     peers: List[Peer],
                     peerListProviders: List[String])
 
+/**
+  * Companion object contains all operations that are done on a network object unless these involve the network.
+  * Methods here return a modified version of this network or its subset.
+  *
+  */
 object Network{
+
+  /**
+    * Apply method construct either a mainnet or a devnet object.
+    *
+    * @param net the networktype, either MainNet or DevNet
+    * @return A basic network object
+    */
   def apply(net: NetworkType): Network = {
     net match {
       case MainNet => {
@@ -67,5 +83,31 @@ object Network{
           List())
       }
     }
+  }
+
+  /**
+    * Return either a random peer or a NoSuchElementException on empty list.
+    *
+    * @param network The network object
+    * @return Either[NoSuchElementException, Peer]
+    */
+  def getRandomPeer(network: Network): Either[NoSuchElementException, Peer] = {
+    if(network.peers.nonEmpty)
+      Right(network.peers(Random.nextInt(network.peers.size)))
+    else
+      Left(new NoSuchElementException)
+  }
+
+  /**
+    * Return either a sorted list of peers by delay (asc) or a NoSuchElementException on empty list
+    *
+    * @param network The network object
+    * @return Either[NoSuchElementException, List[Peer]]
+    */
+  def sortPeersByDelay(network: Network): Either[NoSuchElementException, List[Peer]] = {
+    if(network.peers.nonEmpty)
+      Right(network.peers.sortWith(_.delay < _.delay))
+    else
+      Left(new NoSuchElementException())
   }
 }

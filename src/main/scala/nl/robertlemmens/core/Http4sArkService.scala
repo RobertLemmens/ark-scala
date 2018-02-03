@@ -4,12 +4,12 @@ import cats.effect.Effect
 import nl.robertlemmens.core.algebra.ArkServiceAlgebra
 import nl.robertlemmens.core.models._
 import org.http4s.client.blaze._
-
 import scala.language.higherKinds
 import cats.implicits._
 import io.circe.generic.auto._
 import org.http4s.{Header, Headers, Request, Uri}
 import org.http4s.circe._
+
 /**
   * Created by Robert Lemmens on 1-2-18.
   */
@@ -18,9 +18,10 @@ class Http4sArkService[F[_]: Effect] extends ArkServiceAlgebra[F] {
   //http1client has a connection pool and is pretty performant. The recommended client for http4s.
   val http1Client = Http1Client[F]()
 
-  /*
-    Retrieve the list of peers we are going to use. Either fresh peers or from the seed list
-   */
+  /**
+    * Retrieve the list of peers we are going to use. Either fresh peers or from the seed list
+    *
+    */
   override def warmup(network: Network, numberOfPeers: Int = 20): F[Network] = { //todo move do upper class service.
     //if peers already exist on this network, just return it.
     if (network.peers.nonEmpty)
@@ -74,9 +75,18 @@ class Http4sArkService[F[_]: Effect] extends ArkServiceAlgebra[F] {
     http1Client.flatMap(_.expect[PeerStatus](req))
   }
 
-  override def getPeerList(): F[List[Peer]] = ???
-
-  override def getDelegates(): F[List[Delegate]] = ???
+  override def getDelegates(nethash: String, peer: Peer): F[DelegateResponse] = {
+    implicit val DelegateResponseDecoder = jsonOf[F, DelegateResponse]
+    val protocol = if(peer.port == 4001) "http://" else "https://"
+    val target = Uri.fromString(protocol+peer.ip+":"+peer.port+"/api/delegates")
+    val req: Request[F] = Request(uri = target.right.get).withHeaders(
+      Headers(
+        Header("version", peer.version),
+        Header("nethash", nethash),
+        Header("port", peer.port.toString)
+      ))
+    http1Client.flatMap(_.expect[DelegateResponse](req))
+  }
 
   override def getTransactions(account: Account, limit: Int): F[List[Transaction]] = ???
 

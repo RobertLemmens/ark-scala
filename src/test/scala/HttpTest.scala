@@ -28,4 +28,35 @@ class HttpTest extends FlatSpec{
     assert(peerStat.success)
   }
 
+  "Getting a random peer on the mainnet" should "give us a random peer" in {
+    val mainnet = MainNetFixture.warmNetwork
+    val randomPeer = Network.getRandomPeer(mainnet)
+
+    randomPeer match {
+      case Right(peer) => assert(true) //Right pass de test
+      case Left(error) => assert(false)
+    }
+  }
+
+  it should "give a left error when peers are empty" in {
+    val emptyNetwork = Network(MainNet)
+    val randomPeer = Network.getRandomPeer(emptyNetwork)
+
+    randomPeer match {
+      case Right(peer) => assert(false)
+      case Left(error) => assert(true) //Left pass the test
+    }
+  }
+
+  "Getting a list of delegates on the mainnet" should "give us a list of delegates with success flag" in {
+    val mainnet = MainNetFixture.warmNetwork
+    val httpService = MainNetFixture.httpService
+
+    Network.getRandomPeer(mainnet) match {
+      case Right(peer) => assert(httpService.getDelegates(mainnet.netHash, peer).unsafeRunSync().success) //pass the test
+      case Left(error) => assert(false) //fail the test
+    }
+
+  }
+
 }

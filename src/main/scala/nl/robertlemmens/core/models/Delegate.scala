@@ -1,8 +1,6 @@
 package nl.robertlemmens.core.models
 
 /**
-  * Created by Robert Lemmens on 1-2-18.
+  * Created by Robert Lemmens
   */
-class Delegate {
-
-}
+case class Delegate(username: String, address: String, publicKey: String, vote: String, producedblocks: Long, missedblocks: Long, rate: Int, approval: Double, productivity: Double)

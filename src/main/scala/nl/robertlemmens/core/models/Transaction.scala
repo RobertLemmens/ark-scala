@@ -5,7 +5,11 @@ import java.nio.{ByteBuffer, ByteOrder}
 import scorex.crypto.encode.{Base16, Base58}
 
 /**
-  * Created by Robert Lemmens on 1-2-18.
+  * Created by Robert Lemmens
+  *
+  * A transaction object is one transaction on the network. This can be a normal transaction, a secondsignature transaction, delegate transaction or vote transaction.
+  * Transactions are made in the TransactionBuilder for convenience.
+  *
   */
 sealed trait TransactionType
 case object NORMAL extends TransactionType
@@ -27,7 +31,15 @@ case class Transaction(id: Option[String],
                        asset: Option[Asset])
 
 object Transaction {
-  def toBytes(transaction: Transaction, skipSignature: Boolean, skipSecondSignature: Boolean): Array[Byte] = {
+  /**
+    * Turn the transaction into an array of bytes
+    *
+    * @param transaction
+    * @param skipSignature
+    * @param skipSecondSignature
+    * @return Array[Byte] of this transaction
+    */
+  def toBytes(transaction: Transaction, skipSignature: Boolean, skipSecondSignature: Boolean): Array[Byte] = { //todo cleanup, ugly method. Need to think about all the option types.
     val buffer = ByteBuffer.allocate(1000)
     buffer.order(ByteOrder.LITTLE_ENDIAN)
 
@@ -44,7 +56,7 @@ object Transaction {
 
     transaction.requesterPublicKey match {
       case Some(x) => buffer.put(Base16.decode(x))
-      case None => println("No requester public key key")
+      case None => _
     }
 
     transaction.recipientId match {
