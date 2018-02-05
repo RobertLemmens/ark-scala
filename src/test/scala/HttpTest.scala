@@ -59,4 +59,14 @@ class HttpTest extends FlatSpec{
 
   }
 
+  "Calling the transactions endpoint" should "give us a list of transactions" in {
+    val mainnet = MainNetFixture.warmNetwork
+    val httpService = MainNetFixture.httpService
+
+    Network.getRandomPeer(mainnet) match {
+      case Right(peer) => assert(httpService.getTransactions(peer, mainnet.netHash).unsafeRunSync().success)
+      case Left(error) => assert(false)
+    }
+  }
+
 }

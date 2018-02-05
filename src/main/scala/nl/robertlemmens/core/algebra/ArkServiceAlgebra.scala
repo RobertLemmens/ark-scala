@@ -13,9 +13,9 @@ trait ArkServiceAlgebra[F[_]] {
 
   def getDelegates(nethash: String, peer: Peer): F[DelegateResponse]
 
-  def getTransactions(account: Account, limit: Int): F[List[Transaction]]
+  def getTransactions(peer: Peer, nethash: String, limit: Int = 20): F[TransactionResponse]
 
-  def postTransaction(transaction: Transaction): F[Transaction]
+  def postTransaction(nethash: String, transaction: Transaction, peer: Peer): F[Transaction]
 
   def getFreshpeers(network: Network, numberOfPeers: Int): F[List[Peer]]
 

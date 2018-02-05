@@ -15,7 +15,8 @@ sbt test
 ``
 
 # Todo
-The first iteration of the cryptographic methods and creating transactions now works. The next step is to implement the network. This will be done using Http4s.
+- Completely implement all the Http request
+- Refactor to more 'typelevel' like code
 
 # License
 

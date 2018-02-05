@@ -56,7 +56,7 @@ object Transaction {
 
     transaction.requesterPublicKey match {
       case Some(x) => buffer.put(Base16.decode(x))
-      case None => _
+      case None => println("No requester public key")
     }
 
     transaction.recipientId match {

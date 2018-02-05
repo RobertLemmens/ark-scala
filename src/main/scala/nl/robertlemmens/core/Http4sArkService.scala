@@ -4,10 +4,12 @@ import cats.effect.Effect
 import nl.robertlemmens.core.algebra.ArkServiceAlgebra
 import nl.robertlemmens.core.models._
 import org.http4s.client.blaze._
+import org.http4s.dsl.io._
+
 import scala.language.higherKinds
 import cats.implicits._
 import io.circe.generic.auto._
-import org.http4s.{Header, Headers, Request, Uri}
+import org.http4s.{Header, Headers, Request, Uri, UrlForm}
 import org.http4s.circe._
 
 /**
@@ -88,9 +90,29 @@ class Http4sArkService[F[_]: Effect] extends ArkServiceAlgebra[F] {
     http1Client.flatMap(_.expect[DelegateResponse](req))
   }
 
-  override def getTransactions(account: Account, limit: Int): F[List[Transaction]] = ???
+  override def getTransactions(peer: Peer, nethash: String, limit: Int = 20): F[TransactionResponse] = {
+    implicit val TransactionResponseDecoder = jsonOf[F, TransactionResponse]
+    val protocol = if(peer.port == 4001) "http://" else "https://"
+    val target = Uri.fromString(protocol+peer.ip+":"+peer.port+"/api/transactions")
+    val req: Request[F] = Request(uri = target.right.get).withHeaders(
+      Headers(
+        Header("version", peer.version),
+        Header("nethash", nethash),
+        Header("port", peer.port.toString)
+      ))
+    http1Client.flatMap(_.expect[TransactionResponse](req))
+  }
 
-  override def postTransaction(transaction: Transaction): F[Transaction] = ???
+  override def postTransaction(nethash: String, transaction: Transaction, peer: Peer): F[Transaction] = {
+    implicit val TransactionDecoder = jsonOf[F, Transaction]
+    val protocol = if(peer.port == 4001) "http://" else "https://"
+    val target = Uri.fromString(protocol+peer.ip+":"+peer.port+"/api/transactions")
+
+    val req= POST
+
+    http1Client.flatMap(_.expect[Transaction](""))
+  }
+
 }
 
 object Http4sArkService {
