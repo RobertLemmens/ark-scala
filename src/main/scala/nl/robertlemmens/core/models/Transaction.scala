@@ -8,7 +8,7 @@ import scorex.crypto.encode.{Base16, Base58}
   * Created by Robert Lemmens
   *
   * A transaction object is one transaction on the network. This can be a normal transaction, a secondsignature transaction, delegate transaction or vote transaction.
-  * Transactions are made in the TransactionBuilder for convenience.
+  * Transactions are made in the TransactionBuilder for convenience. This is also the preferred way.
   *
   */
 sealed trait TransactionType
