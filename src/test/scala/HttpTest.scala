@@ -1,5 +1,5 @@
 import cats.effect.IO
-import nl.robertlemmens.core.Http4sArkService
+import nl.robertlemmens.core.http.Http4sArkHttpImplementation
 import nl.robertlemmens.core.models.{DevNet, MainNet, Network}
 import org.scalatest.FlatSpec
 
@@ -10,7 +10,7 @@ class HttpTest extends FlatSpec{
 
   def MainNetFixture = new {
     val network = Network(MainNet)
-    val httpService = Http4sArkService[IO]
+    val httpService = Http4sArkHttpImplementation[IO]
     val warmNetwork = httpService.warmup(network).unsafeRunSync()
   }
 

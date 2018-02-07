@@ -1,11 +1,11 @@
-package nl.robertlemmens.core.algebra
+package nl.robertlemmens.core.http.algebra
 
 import nl.robertlemmens.core.models._
 
 /**
   * Created by Robert Lemmens on 1-2-18.
   */
-trait ArkServiceAlgebra[F[_]] {
+trait ArkHttpAlgebra[F[_]] {
 
   def warmup(network: Network, numberOfPeers: Int = 20): F[Network]
 
@@ -15,7 +15,7 @@ trait ArkServiceAlgebra[F[_]] {
 
   def getTransactions(peer: Peer, nethash: String, limit: Int = 20): F[TransactionResponse]
 
-  def getTransactionsFromAccount(account: Account, netash: String, peer: Peer, limit: Int = 20): F[TransactionResponse]
+  def getTransactionsFromAddress(address: String, netash: String, peer: Peer, limit: Int = 20): F[TransactionResponse]
 
   def postTransaction(nethash: String, transaction: Transaction, peer: Peer): F[Transaction]
 

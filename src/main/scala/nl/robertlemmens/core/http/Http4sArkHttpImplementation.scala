@@ -1,22 +1,22 @@
-package nl.robertlemmens.core
+package nl.robertlemmens.core.http
 
 import cats.effect.Effect
-import nl.robertlemmens.core.algebra.ArkServiceAlgebra
+import cats.implicits._
+import io.circe.generic.auto._
+import io.circe.{Decoder, HCursor}
+import nl.robertlemmens.core.http.algebra.ArkHttpAlgebra
 import nl.robertlemmens.core.models._
+import org.http4s.circe._
 import org.http4s.client.blaze._
 import org.http4s.dsl.io._
+import org.http4s.{Header, Headers, Request, Uri}
 
 import scala.language.higherKinds
-import cats.implicits._
-import io.circe.{Decoder, HCursor}
-import io.circe.generic.auto._
-import org.http4s.{EntityDecoder, Header, Headers, Request, Uri, UrlForm}
-import org.http4s.circe._
 
 /**
   * Created by Robert Lemmens on 1-2-18.
   */
-class Http4sArkService[F[_]: Effect] extends ArkServiceAlgebra[F] {
+class Http4sArkHttpImplementation[F[_]: Effect] extends ArkHttpAlgebra[F] {
 
   //http1client has a connection pool and is pretty performant. The recommended client for http4s.
   val http1Client = Http1Client[F]()
@@ -120,7 +120,6 @@ class Http4sArkService[F[_]: Effect] extends ArkServiceAlgebra[F] {
 
     implicit val TransactionResponseDecoder: Decoder[TransactionResponse] = new Decoder[TransactionResponse] {
       final def apply(c: HCursor): Decoder.Result[TransactionResponse] = {
-        println("USING THE DECODER YEA")
         for {
           success <- c.downField("success").as[Boolean]
           transactions <- c.downField("transactions").as[List[Transaction]]
@@ -144,7 +143,7 @@ class Http4sArkService[F[_]: Effect] extends ArkServiceAlgebra[F] {
     http1Client.flatMap(_.expect[TransactionResponse](req))
   }
 
-  override def getTransactionsFromAccount(account: Account, netash: String, peer: Peer, limit: Int): F[TransactionResponse] = {
+  override def getTransactionsFromAddress(address: String, netash: String, peer: Peer, limit: Int = 20): F[TransactionResponse] = {
     ???
   }
 
@@ -160,6 +159,6 @@ class Http4sArkService[F[_]: Effect] extends ArkServiceAlgebra[F] {
 
 }
 
-object Http4sArkService {
-  def apply[F[_]: Effect]: Http4sArkService[F] = new Http4sArkService[F]()
+object Http4sArkHttpImplementation {
+  def apply[F[_]: Effect]: Http4sArkHttpImplementation[F] = new Http4sArkHttpImplementation[F]()
 }
