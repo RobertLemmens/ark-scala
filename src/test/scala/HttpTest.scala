@@ -25,7 +25,7 @@ class HttpTest extends FlatSpec{
     val mainNet = MainNetFixture.warmNetwork
     val peerStat = MainNetFixture.httpService.getPeerStatus(mainNet.netHash, mainNet.peers.head).unsafeRunSync()
 
-    assert(peerStat.success)
+    assert(peerStat.get.success)
   }
 
   "Getting a random peer on the mainnet" should "give us a random peer" in {
@@ -64,7 +64,7 @@ class HttpTest extends FlatSpec{
     val httpService = MainNetFixture.httpService
 
     Network.getRandomPeer(mainnet) match {
-      case Right(peer) => assert(httpService.getTransactions(peer, mainnet.netHash).unsafeRunSync().success)
+      case Right(peer) => assert(httpService.getTransactions(mainnet.netHash,peer).unsafeRunSync().success)
       case Left(error) => assert(false)
     }
   }

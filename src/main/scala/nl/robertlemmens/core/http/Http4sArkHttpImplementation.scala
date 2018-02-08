@@ -21,11 +21,8 @@ class Http4sArkHttpImplementation[F[_]: Effect] extends ArkHttpAlgebra[F] {
   //http1client has a connection pool and is pretty performant. The recommended client for http4s.
   val http1Client = Http1Client[F]()
 
-  /**
-    * Retrieve the list of peers we are going to use. Either fresh peers or from the seed list
-    *
-    */
-  override def warmup(network: Network, numberOfPeers: Int = 20): F[Network] = { //todo move do upper class service.
+  def warmup(network: Network, numberOfPeers: Int = 20): F[Network] = {
+
     //if peers already exist on this network, just return it.
     if (network.peers.nonEmpty)
       network.pure[F]
@@ -62,9 +59,9 @@ class Http4sArkHttpImplementation[F[_]: Effect] extends ArkHttpAlgebra[F] {
       0)).pure[F]
   }
 
-  override def getPeerStatus(nethash: String, peer: Peer): F[PeerStatus] = {
+  override def getPeerStatus(nethash: String, peer: Peer): F[Option[PeerStatus]] = {
     implicit val PeerStatusHeaderDecoder = jsonOf[F, StatusHeader]
-    implicit val PeerStatusResponseDecoder = jsonOf[F, PeerStatus]
+    implicit val PeerStatusResponseDecoder = jsonOf[F, Option[PeerStatus]]
     val protocol = if(peer.port == 4001) "http://" else "https://"
     val target = Uri.fromString(protocol+peer.ip+":"+peer.port+"/peer/status")
     val req: Request[F] =
@@ -75,7 +72,7 @@ class Http4sArkHttpImplementation[F[_]: Effect] extends ArkHttpAlgebra[F] {
             Header("nethash", nethash),
             Header("port", peer.port.toString)
           )) // set headers todo: move convenient methods for these things
-    http1Client.flatMap(_.expect[PeerStatus](req))
+    http1Client.flatMap(_.expect[Option[PeerStatus]](req))
   }
 
   override def getDelegates(nethash: String, peer: Peer): F[DelegateResponse] = {
@@ -91,7 +88,7 @@ class Http4sArkHttpImplementation[F[_]: Effect] extends ArkHttpAlgebra[F] {
     http1Client.flatMap(_.expect[DelegateResponse](req))
   }
 
-  override def getTransactions(peer: Peer, nethash: String, limit: Int = 20): F[TransactionResponse] = {
+  override def getTransactions(nethash: String, peer: Peer,  limit: Int = 20): F[TransactionResponse] = {
     implicit val TransactionDecoder: Decoder[Transaction] = new Decoder[Transaction] {
       final def apply(c: HCursor): Decoder.Result[Transaction] = {
         for {

@@ -30,7 +30,9 @@ case class Network(
 object Network{
 
   /**
-    * Apply method construct either a mainnet or a devnet object.
+    * Construct either a mainnet or a devnet object depending on the supplied networktype.
+    *
+    * Note that you will still need to warmup() the network. the peers: List[Peer] is empty by default
     *
     * @param net the networktype, either MainNet or DevNet
     * @return A basic network object

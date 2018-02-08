@@ -7,13 +7,11 @@ import nl.robertlemmens.core.models._
   */
 trait ArkHttpAlgebra[F[_]] {
 
-  def warmup(network: Network, numberOfPeers: Int = 20): F[Network]
-
-  def getPeerStatus(nethash: String, peer: Peer): F[PeerStatus]
+  def getPeerStatus(nethash: String, peer: Peer): F[Option[PeerStatus]]
 
   def getDelegates(nethash: String, peer: Peer): F[DelegateResponse]
 
-  def getTransactions(peer: Peer, nethash: String, limit: Int = 20): F[TransactionResponse]
+  def getTransactions(nethash: String, peer: Peer, limit: Int = 20): F[TransactionResponse]
 
   def getTransactionsFromAddress(address: String, netash: String, peer: Peer, limit: Int = 20): F[TransactionResponse]
 
