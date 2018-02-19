@@ -9,7 +9,7 @@ import nl.robertlemmens.core.models._
 import org.http4s.circe._
 import org.http4s.client.blaze._
 import org.http4s.dsl.io._
-import org.http4s.{Header, Headers, Request, Uri}
+import org.http4s.{Header, Headers, Method, Request, Status, Uri}
 
 import scala.language.higherKinds
 
@@ -149,9 +149,14 @@ class Http4sArkHttpImplementation[F[_]: Effect] extends ArkHttpAlgebra[F] {
     val protocol = if(peer.port == 4001) "http://" else "https://"
     val target = Uri.fromString(protocol+peer.ip+":"+peer.port+"/api/transactions")
 
-    val req= POST
+    val req: Request[F] = Request(method = Method.POST, uri = target.right.get)
 
-    http1Client.flatMap(_.expect[Transaction](""))
+    http1Client.flatMap(_.fetch(req) {
+      case Status.Successful(r) => r.attemptAs[Transaction].leftMap(_.message).value
+     // case r => r.as[String].map(b => Left(s"Request $req failed with status ${r.status.code} and body $b"))
+    })
+
+    http1Client.flatMap(_.expect[Transaction](req))
   }
 
 }
