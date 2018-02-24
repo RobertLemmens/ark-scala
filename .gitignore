@@ -32,7 +32,6 @@ project/plugins/project/
 .idea/workspace.xml
 .idea/tasks.xml
 .idea/modules/srdi-rest-invoice_read-server.iml
-.idea/modules/srdi-rest-invoice_read-server.iml
 
 # Sensitive or high-churn files:
 .idea/dataSources/
@@ -44,7 +43,6 @@ project/plugins/project/
 .idea/uiDesigner.xml
 
 .idea/*
-.idea/.*
 
 *.iml
 
