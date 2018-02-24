@@ -11,14 +11,14 @@ class CryptoTest extends FlatSpec{
     val network = Network(MainNet)
     val keys = CryptoUtils.getKeys("this is a top secret passphrase")
     val address = CryptoUtils.getAddress(network, keys)
-
+    
     assert(address == "AGeYmgbg2LgGxRW2vNNJvQ88PknEJsYizC")
   }
 
   it should "generate address 'D61mfSggzbvQgTUe6JhYKH2doHaqJ3Dyib' on Devnet" in {
     val network = Network(DevNet)
     val keys = CryptoUtils.getKeys("this is a top secret passphrase")
-    val address = CryptoUtils.getAddress(network, keys)
+    val address = CryptoUtils.getAddress(network, keys)    
 
     assert(address == "D61mfSggzbvQgTUe6JhYKH2doHaqJ3Dyib")
   }

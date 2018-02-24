@@ -9,7 +9,7 @@ import nl.robertlemmens.core.models._
 import scala.language.higherKinds
 import cats.syntax.all._
 /**
-  * Created by Robert Lemmens on 6-2-18.
+  * Created by Robert Lemmens
   */
 class ArkService[F[_]: Effect](httpAlgebra: ArkHttpAlgebra[F]) {
 
@@ -88,7 +88,7 @@ class ArkService[F[_]: Effect](httpAlgebra: ArkHttpAlgebra[F]) {
     * @param M
     * @return
     */
-  def getDelegates(network: Network, peer: Peer)(implicit M: Monad[F]): EitherT[F, ErrorCode, List[Delegate]] = EitherT {
+  def getDelegates(network: Network, peer: Peer)(implicit M: Monad[F]): EitherT[F, ErrorCode, List[DelegateM]] = EitherT {
     httpAlgebra.getDelegates(network.netHash, peer).map {
       e => e.success match {
         case true => Right(e.delegates)

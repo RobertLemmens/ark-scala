@@ -14,7 +14,8 @@ import org.http4s.{Header, Headers, Method, Request, Status, Uri}
 import scala.language.higherKinds
 
 /**
-  * Created by Robert Lemmens on 1-2-18.
+  * Created by Robert Lemmens on 
+  
   */
 class Http4sArkHttpImplementation[F[_]: Effect] extends ArkHttpAlgebra[F] {
 
