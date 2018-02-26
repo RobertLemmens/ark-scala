@@ -108,7 +108,7 @@ class Http4sArkHttpImplementation[F[_]: Effect] extends ArkHttpAlgebra[F] {
           val transactionType = typ match {
             case 0 => NORMAL
             case 1 => SECONDSIGNATURE
-            case 2 => DELEGATE
+            case 2 => DELEGATE_REG
             case 3 => VOTE
           }
           Transaction(Some(id), timestamp, Some(recipientId), amount, fee, transactionType, vendorField, Some(signature), signSignature, Some(senderPubKey), None, None)

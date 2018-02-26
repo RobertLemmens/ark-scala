@@ -1,4 +1,4 @@
-import cats.effect.IO
+import cats.effect.Effect
 import nl.robertlemmens.core.ArkService
 import nl.robertlemmens.core.http.Http4sArkHttpImplementation
 import nl.robertlemmens.core.models.{MainNet, Network}
@@ -9,10 +9,13 @@ import org.scalatest.FlatSpec
   */
 class ArkServiceTest extends FlatSpec {
 
-  def MainNetFixture = new {
+
+  def MainNetFixture[F[_]](implicit E: Effect[F]) = new {
     val network = Network(MainNet)
-    val httpImpl = Http4sArkHttpImplementation[IO]
-    val service = ArkService[IO](httpImpl)
+    val httpImpl = Http4sArkHttpImplementation[F]
+    val service = ArkService[F](httpImpl)
   }
+
+
 
 }

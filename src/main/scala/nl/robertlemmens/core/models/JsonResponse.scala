@@ -22,5 +22,5 @@ case class StatusHeader(
                    blockSignature: String)
 case class PeerStatus(success: Boolean, height: Long, forgingAllowed: Boolean, currentSlot: Long, header: StatusHeader) //todo rename
 case class PeerResponse(success: Boolean, peers: List[Peer])
-case class DelegateResponse(success: Boolean, delegates: List[DelegateM], totalCount: Int)
+case class DelegateResponse(success: Boolean, delegates: List[Delegate], totalCount: Int)
 case class TransactionResponse(success: Boolean, transactions: List[Transaction], count: String)

@@ -50,7 +50,7 @@ class TransactionBuilder {
   def createDelegate(username: String, passphrase: String, secondPassphrase: Option[String]): Option[Transaction] = {
     val timeStamp = TimeUtils.getTime()
     val asset = new Asset(None, Some(username), None)
-    val signedTransaction = sign(Transaction(None, timeStamp, None, 0, 2500000000L, DELEGATE, None, None, None, None, None, Some(asset)), passphrase)
+    val signedTransaction = sign(Transaction(None, timeStamp, None, 0, 2500000000L, DELEGATE_REG, None, None, None, None, None, Some(asset)), passphrase)
     val finalTransaction = secondPassphrase match {
       case Some(x) => secondSign(signedTransaction.get, x)
       case None => signedTransaction

@@ -14,7 +14,7 @@ import scorex.crypto.encode.{Base16, Base58}
 sealed trait TransactionType
 case object NORMAL extends TransactionType
 case object SECONDSIGNATURE extends TransactionType
-case object DELEGATE extends TransactionType
+case object DELEGATE_REG extends TransactionType
 case object VOTE extends TransactionType
 
 case class Transaction(id: Option[String],
@@ -46,7 +46,7 @@ object Transaction {
     val typeByte = transaction.transactionType match {
       case NORMAL => 0.asInstanceOf[Byte]
       case SECONDSIGNATURE => 1.asInstanceOf[Byte]
-      case DELEGATE => 2.asInstanceOf[Byte]
+      case DELEGATE_REG => 2.asInstanceOf[Byte]
       case VOTE => 3.asInstanceOf[Byte]
     }
 
@@ -80,7 +80,7 @@ object Transaction {
     transaction.transactionType match {
       case NORMAL => println("Normal transaction")
       case SECONDSIGNATURE => buffer.put(Base16.decode(transaction.asset.get.signature.get))
-      case DELEGATE => buffer.put(transaction.asset.get.username.get.toCharArray.map(_.toByte))
+      case DELEGATE_REG => buffer.put(transaction.asset.get.username.get.toCharArray.map(_.toByte))
       case VOTE => buffer.put(transaction.asset.get.votes.get.mkString("").toCharArray.map(_.toByte))
     }
 

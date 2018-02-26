@@ -88,7 +88,7 @@ class ArkService[F[_]: Effect](httpAlgebra: ArkHttpAlgebra[F]) {
     * @param M
     * @return
     */
-  def getDelegates(network: Network, peer: Peer)(implicit M: Monad[F]): EitherT[F, ErrorCode, List[DelegateM]] = EitherT {
+  def getDelegates(network: Network, peer: Peer)(implicit M: Monad[F]): EitherT[F, ErrorCode, List[Delegate]] = EitherT {
     httpAlgebra.getDelegates(network.netHash, peer).map {
       e => e.success match {
         case true => Right(e.delegates)

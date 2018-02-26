@@ -8,9 +8,6 @@ import org.scalatest.FlatSpec
   */
 class HttpTest extends FlatSpec{
 
-
-  behavior of "Http4sImplementation"
-
   def MainNetFixture = new {
     val network = Network(MainNet)
     val httpService = Http4sArkHttpImplementation[IO]
