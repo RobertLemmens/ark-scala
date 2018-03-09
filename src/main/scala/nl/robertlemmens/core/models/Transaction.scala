@@ -2,20 +2,21 @@ package nl.robertlemmens.core.models
 
 import java.nio.{ByteBuffer, ByteOrder}
 
+import nl.robertlemmens.core.utils.CryptoUtils
 import scorex.crypto.encode.{Base16, Base58}
 
 /**
-  * Created by Robert Lemmens
   *
-  * A transaction object is one transaction on the network. This can be a normal transaction, a secondsignature transaction, delegate transaction or vote transaction.
+  * A transaction object is one transaction on the network. This can be a normal transaction, a second signature transaction, delegate transaction or vote transaction.
   * Transactions are made in the TransactionBuilder for convenience. This is also the preferred way.
   *
   */
 sealed trait TransactionType
 case object NORMAL extends TransactionType
 case object SECONDSIGNATURE extends TransactionType
-case object DELEGATE_REG extends TransactionType
+case object CREATEDELEGATE extends TransactionType
 case object VOTE extends TransactionType
+case object MULTISIGNATURE extends TransactionType
 
 case class Transaction(id: Option[String],
                        timestamp: Long,
@@ -28,9 +29,32 @@ case class Transaction(id: Option[String],
                        signSignature: Option[String],
                        senderPublicKey: Option[String],
                        requesterPublicKey: Option[String],
-                       asset: Option[Asset])
+                       asset: Option[Asset]) {
+  override def toString: String = {
+    s"""Transation {
+       |id: ${id.getOrElse("None")}
+       |timestamp: $timestamp
+       |recipientId: ${recipientId.getOrElse("None")}
+       |amount: $amount
+       |fee: $fee
+       |transactionType: $transactionType
+       |vendorField: ${vendorField.getOrElse("None")}
+       |}
+     """.stripMargin
+  }
+}
 
 object Transaction {
+
+  implicit val TransactionSerializer = {
+    def fromBytes = ???
+    def toBytes = ???
+  }
+
+//  def apply(): Transaction = {
+//    Transaction()
+//  }
+
   /**
     * Turn the transaction into an array of bytes
     *
@@ -46,7 +70,7 @@ object Transaction {
     val typeByte = transaction.transactionType match {
       case NORMAL => 0.asInstanceOf[Byte]
       case SECONDSIGNATURE => 1.asInstanceOf[Byte]
-      case DELEGATE_REG => 2.asInstanceOf[Byte]
+      case CREATEDELEGATE => 2.asInstanceOf[Byte]
       case VOTE => 3.asInstanceOf[Byte]
     }
 
@@ -78,9 +102,9 @@ object Transaction {
     buffer.putLong(transaction.fee)
 
     transaction.transactionType match {
-      case NORMAL => println("Normal transaction")
+      case NORMAL => print("Normal")
       case SECONDSIGNATURE => buffer.put(Base16.decode(transaction.asset.get.signature.get))
-      case DELEGATE_REG => buffer.put(transaction.asset.get.username.get.toCharArray.map(_.toByte))
+      case CREATEDELEGATE => buffer.put(transaction.asset.get.username.get.toCharArray.map(_.toByte))
       case VOTE => buffer.put(transaction.asset.get.votes.get.mkString("").toCharArray.map(_.toByte))
     }
 
@@ -103,5 +127,14 @@ object Transaction {
     buffer.get(outBuffer)
     outBuffer
   }
+
+  def sign(tx: Transaction, passphrase: String): SignedTransaction = {
+    val signedSenderAddress = Base16.encode(CryptoUtils.getKeys(passphrase).getPubKey)
+    val signedSignature = Base16.encode(CryptoUtils.sign(tx, passphrase).encodeToDER())
+
+    SignedTransaction(tx, signedSignature, signedSenderAddress)
+  }
+
+  def secondSign(tx: SignedTransaction, passphrase: String): SignedTransaction = ???
 }
 

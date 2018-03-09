@@ -58,6 +58,8 @@ class TransactionTest extends FlatSpec{
       "this is a top secret passphrase",
       Some("second passphrase"))
 
+    println(tx.get)
+
     val secondPublicKey = Base16.encode(CryptoUtils.getKeys("second passphrase").getPubKey)
 
     assert(tx.isDefined)

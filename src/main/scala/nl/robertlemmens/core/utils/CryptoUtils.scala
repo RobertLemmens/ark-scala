@@ -2,11 +2,10 @@ package nl.robertlemmens.core.utils
 
 import nl.robertlemmens.core.models.{ArkAddress, Network, Transaction}
 import org.bitcoinj.core._
-import org.bitcoinj.core.VersionedChecksummedBytes
 import org.spongycastle.crypto.digests.RIPEMD160Digest
 import scorex.crypto.encode.Base16
 /**
-  * Created by Robert Lemmens on 2-2-18.
+  * Some implementations for cryptographic functions needed by the api
   */
 object CryptoUtils {
 
