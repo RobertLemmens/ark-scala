@@ -3,7 +3,7 @@ package nl.robertlemmens.core.models
 /**
   * A signed transaction data type
   */
-case class SignedTransaction(tx: Transaction, signature: String, senderAddress: String) {
+case class SignedTransaction(tx: Transaction, signature: String, senderAddress: String, secondSignature: Option[String]) { //optional second signature?
   override def toString: String = {
     s"""SignedTransaction {
        |Transaction: $tx

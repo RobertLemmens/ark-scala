@@ -135,6 +135,7 @@ object Transaction {
     SignedTransaction(tx, signedSignature, signedSenderAddress)
   }
 
+  //todo: how to handle the second sign?
   def secondSign(tx: SignedTransaction, passphrase: String): SignedTransaction = ???
 }
 
