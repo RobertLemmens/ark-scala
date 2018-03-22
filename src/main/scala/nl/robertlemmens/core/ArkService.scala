@@ -53,7 +53,7 @@ class ArkService[F[_]: Effect](httpAlgebra: ArkHttpAlgebra[F]) {
     * @param M
     * @return
     */
-  def getTransactions(network: Network, peer: Peer)(implicit M: Monad[F]): EitherT[F, ErrorCode, List[Transaction]] = EitherT {
+  def getTransactions(network: Network, peer: Peer)(implicit M: Monad[F]): EitherT[F, ErrorCode, List[SignedTransaction]] = EitherT {
     httpAlgebra.getTransactions(network.netHash, peer).map{
       e => e.success match {
         case true => Right(e.transactions)
@@ -71,7 +71,7 @@ class ArkService[F[_]: Effect](httpAlgebra: ArkHttpAlgebra[F]) {
     * @param M
     * @return
     */
-  def getTransactionsFromAccount(network: Network, peer: Peer, account: Account)(implicit M: Monad[F]): EitherT[F, ErrorCode, List[Transaction]] = EitherT {
+  def getTransactionsFromAccount(network: Network, peer: Peer, account: Account)(implicit M: Monad[F]): EitherT[F, ErrorCode, List[SignedTransaction]] = EitherT {
     httpAlgebra.getTransactionsFromAddress(account.address, network.netHash, peer).map {
       e => e.success match {
         case true => Right(e.transactions)
@@ -96,7 +96,6 @@ class ArkService[F[_]: Effect](httpAlgebra: ArkHttpAlgebra[F]) {
       }
     }
   }
-
 
 
 }

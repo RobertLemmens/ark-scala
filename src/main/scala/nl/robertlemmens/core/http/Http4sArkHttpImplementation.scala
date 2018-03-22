@@ -90,8 +90,8 @@ class Http4sArkHttpImplementation[F[_]: Effect] extends ArkHttpAlgebra[F] {
   }
 
   override def getTransactions(nethash: String, peer: Peer,  limit: Int = 20): F[TransactionResponse] = {
-    implicit val TransactionDecoder: Decoder[Transaction] = new Decoder[Transaction] {
-      final def apply(c: HCursor): Decoder.Result[Transaction] = {
+    implicit val TransactionDecoder: Decoder[SignedTransaction] = new Decoder[SignedTransaction] {
+      final def apply(c: HCursor): Decoder.Result[SignedTransaction] = {
         for {
           id <- c.downField("id").as[String]
           typ <- c.downField("type").as[Int]
@@ -111,7 +111,7 @@ class Http4sArkHttpImplementation[F[_]: Effect] extends ArkHttpAlgebra[F] {
             case 2 => CREATEDELEGATE
             case 3 => VOTE
           }
-          Transaction(Some(id), timestamp, Some(recipientId), amount, fee, transactionType, vendorField, Some(signature), signSignature, Some(senderPubKey), None, None)
+          SignedTransaction(Transaction(Some(id), timestamp, Some(recipientId), amount, fee, transactionType, vendorField, None, None), signature,senderPubKey, signSignature)
         }
       }
     }
@@ -120,7 +120,7 @@ class Http4sArkHttpImplementation[F[_]: Effect] extends ArkHttpAlgebra[F] {
       final def apply(c: HCursor): Decoder.Result[TransactionResponse] = {
         for {
           success <- c.downField("success").as[Boolean]
-          transactions <- c.downField("transactions").as[List[Transaction]]
+          transactions <- c.downField("transactions").as[List[SignedTransaction]]
           count <- c.downField("count").as[String]
         } yield {
 

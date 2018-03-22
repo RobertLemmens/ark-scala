@@ -25,9 +25,6 @@ case class Transaction(id: Option[String],
                        fee: Long,
                        transactionType: TransactionType,
                        vendorField: Option[String],
-                       signature: Option[String],
-                       signSignature: Option[String],
-                       senderPublicKey: Option[String],
                        requesterPublicKey: Option[String],
                        asset: Option[Asset]) {
   override def toString: String = {
@@ -59,11 +56,9 @@ object Transaction {
     * Turn the transaction into an array of bytes
     *
     * @param transaction
-    * @param skipSignature
-    * @param skipSecondSignature
     * @return Array[Byte] of this transaction
     */
-  def toBytes(transaction: Transaction, skipSignature: Boolean, skipSecondSignature: Boolean): Array[Byte] = { //todo cleanup, ugly method. Need to think about all the option types.
+  def toBytes(transaction: Transaction): Array[Byte] = { //todo cleanup, ugly.
     val buffer = ByteBuffer.allocate(1000)
     buffer.order(ByteOrder.LITTLE_ENDIAN)
 
@@ -76,7 +71,6 @@ object Transaction {
 
     buffer.put(typeByte)
     buffer.putLong(transaction.timestamp)
-    buffer.put(Base16.decode(transaction.senderPublicKey.get))
 
     transaction.requesterPublicKey match {
       case Some(x) => buffer.put(Base16.decode(x))
@@ -108,20 +102,6 @@ object Transaction {
       case VOTE => buffer.put(transaction.asset.get.votes.get.mkString("").toCharArray.map(_.toByte))
     }
 
-    if(!skipSignature) {
-      transaction.signature match {
-        case Some(x) => buffer.put(Base16.decode(x))
-        case None => println("No signature")
-      }
-    }
-
-    if(!skipSecondSignature) {
-      transaction.signSignature match {
-        case Some(x) => buffer.put(Base16.decode(x))
-        case None => println("No second signature")
-      }
-    }
-
     val outBuffer = new Array[Byte](buffer.position())
     buffer.rewind()
     buffer.get(outBuffer)
@@ -132,10 +112,12 @@ object Transaction {
     val signedSenderAddress = Base16.encode(CryptoUtils.getKeys(passphrase).getPubKey)
     val signedSignature = Base16.encode(CryptoUtils.sign(tx, passphrase).encodeToDER())
 
-    SignedTransaction(tx, signedSignature, signedSenderAddress)
+    SignedTransaction(tx, signedSignature, signedSenderAddress, None)
   }
 
   //todo: how to handle the second sign?
-  def secondSign(tx: SignedTransaction, passphrase: String): SignedTransaction = ???
+  def secondSign(tx: SignedTransaction, passphrase: String): SignedTransaction = {
+        tx.copy(secondSignature = Some(Base16.encode(CryptoUtils.secondSign(tx, passphrase).encodeToDER())))
+  }
 }
 
