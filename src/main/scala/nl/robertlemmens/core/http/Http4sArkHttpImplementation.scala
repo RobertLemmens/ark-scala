@@ -63,7 +63,7 @@ class Http4sArkHttpImplementation[F[_]: Effect] extends ArkHttpAlgebra[F] {
   override def getPeerStatus(nethash: String, peer: Peer): F[Option[PeerStatus]] = {
     implicit val PeerStatusHeaderDecoder = jsonOf[F, StatusHeader]
     implicit val PeerStatusResponseDecoder = jsonOf[F, Option[PeerStatus]]
-    val protocol = if(peer.port == 4001) "http://" else "https://"
+    val protocol = if(peer.port == 4001 || peer.port == 4002) "http://" else "https://"
     val target = Uri.fromString(protocol+peer.ip+":"+peer.port+"/peer/status")
     val req: Request[F] =
       Request(uri = target.right.get)
@@ -78,7 +78,7 @@ class Http4sArkHttpImplementation[F[_]: Effect] extends ArkHttpAlgebra[F] {
 
   override def getDelegates(nethash: String, peer: Peer): F[DelegateResponse] = {
     implicit val DelegateResponseDecoder = jsonOf[F, DelegateResponse]
-    val protocol = if(peer.port == 4001) "http://" else "https://"
+    val protocol = if(peer.port == 4001 || peer.port == 4002) "http://" else "https://"
     val target = Uri.fromString(protocol+peer.ip+":"+peer.port+"/api/delegates")
     val req: Request[F] = Request(uri = target.right.get).withHeaders(
       Headers(
@@ -100,7 +100,7 @@ class Http4sArkHttpImplementation[F[_]: Effect] extends ArkHttpAlgebra[F] {
           fee <- c.downField("fee").as[Long]
           vendorField <- c.downField("vendorField").as[Option[String]]
           senderId <- c.downField("senderId").as[String]
-          recipientId <- c.downField("recipientId").as[String]
+          recipientId <- c.downField("recipientId").as[Option[String]]
           senderPubKey <- c.downField("senderPublicKey").as[String]
           signature <- c.downField("signature").as[String]
           signSignature <- c.downField("signSignature").as[Option[String]]
@@ -111,7 +111,7 @@ class Http4sArkHttpImplementation[F[_]: Effect] extends ArkHttpAlgebra[F] {
             case 2 => CREATEDELEGATE
             case 3 => VOTE
           }
-          SignedTransaction(Transaction(Some(id), timestamp, Some(recipientId), amount, fee, transactionType, vendorField, None, None), signature,senderPubKey, signSignature)
+          SignedTransaction(Transaction(Some(id), timestamp, recipientId, amount, fee, transactionType, vendorField, None, None), signature,senderPubKey, signSignature)
         }
       }
     }
@@ -131,7 +131,7 @@ class Http4sArkHttpImplementation[F[_]: Effect] extends ArkHttpAlgebra[F] {
 
     implicit val test = jsonOf[F, TransactionResponse]
 
-    val protocol = if(peer.port == 4001) "http://" else "https://"
+    val protocol = if(peer.port == 4001 || peer.port == 4002) "http://" else "https://"
     val target = Uri.fromString(protocol+peer.ip+":"+peer.port+"/api/transactions")
     val req: Request[F] = Request(uri = target.right.get).withHeaders(
       Headers(
@@ -148,7 +148,7 @@ class Http4sArkHttpImplementation[F[_]: Effect] extends ArkHttpAlgebra[F] {
 
   override def postTransaction(nethash: String, transaction: Transaction, peer: Peer): F[Transaction] = {
     implicit val TransactionDecoder = jsonOf[F, Transaction]
-    val protocol = if(peer.port == 4001) "http://" else "https://"
+    val protocol = if(peer.port == 4001 || peer.port == 4002) "http://" else "https://"
     val target = Uri.fromString(protocol+peer.ip+":"+peer.port+"/api/transactions")
 
     val req: Request[F] = Request(method = Method.POST, uri = target.right.get)

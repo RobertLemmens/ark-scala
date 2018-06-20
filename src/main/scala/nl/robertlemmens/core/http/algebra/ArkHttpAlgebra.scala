@@ -11,6 +11,8 @@ trait ArkHttpAlgebra[F[_]] {
 
   def getDelegates(nethash: String, peer: Peer): F[DelegateResponse]
 
+  def getBlocks(nethash: String, peer: Peer, limit: Int = 20): F[BlockResponse]
+
   def getTransactions(nethash: String, peer: Peer, limit: Int = 20): F[TransactionResponse]
 
   def getTransactionsFromAddress(address: String, netash: String, peer: Peer, limit: Int = 20): F[TransactionResponse]

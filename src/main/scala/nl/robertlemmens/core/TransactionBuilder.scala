@@ -33,8 +33,6 @@ class TransactionBuilder {
       case Some(x) => secondSign(signedTransaction, x)
       case None => signedTransaction
     }
-    println("Final transaction: ")
-    println(finalTransaction)
     finalTransaction.copy(tx = signedTransaction.tx.copy(id = Some(CryptoUtils.getId(signedTransaction))))
   }
 
